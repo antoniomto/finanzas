@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finanzas — Panel de Gastos</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x25A0;</text></svg>" />
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+</head>
+<body>
+
+<div class="ambient-bg" aria-hidden="true"></div>
+
+<!-- ─── HEADER ─── -->
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <span class="logo-title">Finanzas</span>
+      <span class="logo-subtitle">Panel de gastos</span>
+    </div>
+    <div class="header-right">
+      <button id="wa-badge" class="wa-badge disconnected" onclick="onBadgeClick()" title="Ver QR de WhatsApp">
+        <span class="wa-badge-dot"></span>
+        <span id="wa-badge-text">Sin conexión</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ─── TAB NAV ─── -->
+<div class="tab-nav-bar">
+  <div class="tab-nav-inner">
+    <button class="tab-btn active" id="tab-btn-gastos" onclick="switchTab('gastos')">Gastos</button>
+    <button class="tab-btn" id="tab-btn-creditos" onclick="switchTab('creditos')">Créditos</button>
+    <button class="tab-btn" id="tab-btn-reporte" onclick="switchTab('reporte')">Reporte Cyntia</button>
+  </div>
+</div>
+
+<!-- ─── TAB: GASTOS ─── -->
+<div id="tab-gastos" class="tab-content">
+  <div class="app-wrapper">
+    <main>
+      <div class="dashboard-grid">
+
+        <!-- ─── SIDEBAR ─── -->
+        <aside>
+
+          <!-- Total mes -->
+          <div class="card fade-in" style="--delay: 0ms">
+            <div class="card-label" id="total-label">TOTAL ACUMULADO</div>
+            <div class="card-value" id="total-mes">0,00 €</div>
+            <div class="card-meta" id="total-meta">Sin registros</div>
+          </div>
+
+          <!-- Categorías -->
+          <div class="card fade-in" style="--delay: 80ms">
+            <div class="sidebar-section-title">Por categoría</div>
+            <div id="categories-list" class="category-list">
+              <div class="categories-empty">Sin datos este mes</div>
+            </div>
+          </div>
+
+        </aside>
+
+        <!-- ─── TABLE ─── -->
+        <section class="fade-in" style="--delay: 100ms">
+          <div class="table-card">
+            <div class="table-header">
+              <span class="table-title">Historial</span>
+              <div class="month-nav">
+                <button class="month-nav-btn" id="prev-month" title="Mes anterior"><i class="ph-bold ph-caret-left"></i></button>
+                <span class="month-nav-label" id="month-label">—</span>
+                <button class="month-nav-btn" id="next-month" title="Mes siguiente"><i class="ph-bold ph-caret-right"></i></button>
+              </div>
+              <span class="table-count" id="table-count">0 registros</span>
+            </div>
+            <table class="expenses-table">
+              <thead>
+                <tr>
+                  <th>Ticket</th>
+                  <th>Comercio</th>
+                  <th>Fecha</th>
+                  <th>Categoría</th>
+                  <th>Items</th>
+                  <th>Total</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="expenses-tbody">
+                <tr>
+                  <td colspan="7" class="table-empty">
+                    Envía una imagen de ticket por WhatsApp para empezar
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="pagination" id="pagination"></div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ─── TAB: CRÉDITOS ─── -->
+<div id="tab-creditos" class="tab-content" hidden>
+  <div class="app-wrapper">
+    <main>
+
+      <!-- Month nav + add button -->
+      <div class="credits-toolbar fade-in" style="--delay: 0ms">
+        <div class="month-nav">
+          <button class="month-nav-btn" id="credit-prev-month" title="Mes anterior"><i class="ph-bold ph-caret-left"></i></button>
+          <span class="month-nav-label" id="credit-month-label">—</span>
+          <button class="month-nav-btn" id="credit-next-month" title="Mes siguiente"><i class="ph-bold ph-caret-right"></i></button>
+        </div>
+        <button class="btn-add-card" onclick="openTarjetaModal(null)"><i class="ph-bold ph-plus"></i> Agregar tarjeta</button>
+      </div>
+
+      <!-- TDC Cards Grid -->
+      <div id="tdc-cards-grid" class="tdc-cards-grid fade-in" style="--delay: 60ms">
+        <div class="tdc-empty">Sin tarjetas registradas. Agrega una o envía un estado de cuenta por WhatsApp.</div>
+      </div>
+
+      <!-- Créditos / MSI Table -->
+      <div class="table-card fade-in" style="--delay: 120ms; margin-top: 24px">
+        <div class="table-header">
+          <span class="table-title">Créditos a meses</span>
+          <button class="btn-add-card" onclick="openCreditoModal(null)"><i class="ph-bold ph-plus"></i> Agregar MSI</button>
+        </div>
+        <table class="expenses-table">
+          <thead>
+            <tr>
+              <th>Concepto</th>
+              <th>Tarjeta</th>
+              <th>Mensualidad</th>
+              <th>Progreso</th>
+              <th>Pendiente</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="creditos-tbody">
+            <tr><td colspan="6" class="table-empty">Sin créditos registrados</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ─── TAB: REPORTE CYNTIA ─── -->
+<div id="tab-reporte" class="tab-content" hidden>
+  <div class="app-wrapper">
+    <main>
+      <div class="reporte-toolbar fade-in" style="--delay: 0ms">
+        <div class="month-nav">
+          <button class="month-nav-btn" id="reporte-prev-month" title="Mes anterior"><i class="ph-bold ph-caret-left"></i></button>
+          <span class="month-nav-label" id="reporte-month-label">—</span>
+          <button class="month-nav-btn" id="reporte-next-month" title="Mes siguiente"><i class="ph-bold ph-caret-right"></i></button>
+        </div>
+      </div>
+      <div id="reporte-total-card" class="reporte-total-card fade-in" style="--delay: 40ms; display:none">
+        <div class="reporte-total-label">Total a cobrarle a Cyntia este mes</div>
+        <div class="reporte-total-amount" id="reporte-total-amount">—</div>
+      </div>
+      <div class="table-card fade-in" style="--delay: 80ms; margin-top: 24px">
+        <div class="table-header">
+          <span class="table-title">Consumo por estado de cuenta</span>
+        </div>
+        <table class="expenses-table">
+          <thead>
+            <tr>
+              <th>Tarjeta</th>
+              <th>Periodo</th>
+              <th>Nombre</th>
+              <th>Total consumido</th>
+              <th>10% a cobrar</th>
+              <th>Fecha límite pago</th>
+            </tr>
+          </thead>
+          <tbody id="reporte-tbody">
+            <tr><td colspan="6" class="table-empty">Cambia de pestaña para cargar el reporte</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ─── QR MODAL ─── -->
+<div id="qr-modal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal modal-qr" role="dialog" aria-label="Vincular WhatsApp">
+    <div class="modal-header">
+      <span class="modal-title">Vincular WhatsApp</span>
+      <button class="modal-close" onclick="closeQRModal()" aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="modal-body qr-modal-body">
+      <p class="qr-instruction">Escanea desde <strong>Ajustes → Dispositivos vinculados</strong></p>
+      <div id="qr-canvas-wrapper">
+        <div class="qr-placeholder">
+          <div class="qr-spinner"></div>
+          <span class="qr-placeholder-text">Generando QR...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── EDIT EXPENSE MODAL ─── -->
+<div id="edit-modal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal" role="dialog" aria-labelledby="modal-title">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Editar gasto</span>
+      <button class="modal-close" onclick="closeModal()" aria-label="Cerrar">&times;</button>
+    </div>
+    <form id="edit-form" class="modal-body">
+      <input type="hidden" id="edit-id" />
+      <div class="field-group">
+        <label class="field-label" for="edit-comercio">Comercio</label>
+        <input class="field-input" type="text" id="edit-comercio" placeholder="Nombre del comercio" />
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="edit-fecha">Fecha</label>
+          <input class="field-input" type="date" id="edit-fecha" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="edit-categoria">Categoría</label>
+          <select class="field-input" id="edit-categoria">
+            <option>Supermercado</option>
+            <option>Restaurante</option>
+            <option>Transporte</option>
+            <option>Farmacia</option>
+            <option>Ropa</option>
+            <option>Electrónica</option>
+            <option>Hogar</option>
+            <option>Entretenimiento</option>
+            <option>Salud</option>
+            <option>Combustible</option>
+            <option>Otros</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="edit-total">Total</label>
+          <input class="field-input" type="number" id="edit-total" step="0.01" min="0" placeholder="0.00" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="edit-moneda">Moneda</label>
+          <select class="field-input" id="edit-moneda">
+            <option value="MXN">MXN</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="COP">COP</option>
+            <option value="ARS">ARS</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button type="submit" class="btn-primary">Guardar cambios</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ─── TARJETA MODAL ─── -->
+<div id="tarjeta-modal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal modal-tarjeta" role="dialog">
+    <div class="modal-header">
+      <span class="modal-title" id="tarjeta-modal-title">Nueva tarjeta</span>
+      <button class="modal-close" onclick="closeTarjetaModal()" aria-label="Cerrar">&times;</button>
+    </div>
+    <form id="tarjeta-form" class="modal-body">
+      <input type="hidden" id="tarjeta-id" />
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="tarjeta-nombre">Nombre</label>
+          <input class="field-input" type="text" id="tarjeta-nombre" placeholder="Ej. BBVA Oro" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="tarjeta-banco">Banco</label>
+          <input class="field-input" type="text" id="tarjeta-banco" placeholder="Ej. BBVA" />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="tarjeta-ultimos4">Últimos 4 dígitos</label>
+          <input class="field-input" type="text" id="tarjeta-ultimos4" maxlength="4" placeholder="1234" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="tarjeta-limite">Límite de crédito</label>
+          <input class="field-input" type="number" id="tarjeta-limite" step="1" min="0" placeholder="0" />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="tarjeta-dia-corte">Día de corte</label>
+          <input class="field-input" type="number" id="tarjeta-dia-corte" min="1" max="31" placeholder="15" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="tarjeta-dia-pago">Día límite de pago</label>
+          <input class="field-input" type="number" id="tarjeta-dia-pago" min="1" max="31" placeholder="10" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="tarjeta-moneda">Moneda</label>
+          <select class="field-input" id="tarjeta-moneda">
+            <option value="MXN">MXN</option>
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+          </select>
+        </div>
+      </div>
+      <div class="adicionales-section">
+        <div class="adicionales-header">
+          <span class="adicionales-title">Tarjetahabientes adicionales</span>
+          <button type="button" class="btn-add-inline" onclick="addAdicionalInput()"><i class="ph-bold ph-plus"></i> Añadir</button>
+        </div>
+        <div id="adicionales-list"></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeTarjetaModal()">Cancelar</button>
+        <button type="submit" class="btn-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ─── CRÉDITO MODAL ─── -->
+<div id="credito-modal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal" role="dialog">
+    <div class="modal-header">
+      <span class="modal-title" id="credito-modal-title">Nuevo crédito / MSI</span>
+      <button class="modal-close" onclick="closeCreditoModal()" aria-label="Cerrar">&times;</button>
+    </div>
+    <form id="credito-form" class="modal-body">
+      <input type="hidden" id="credito-id" />
+      <div class="field-group">
+        <label class="field-label" for="credito-concepto">Concepto</label>
+        <input class="field-input" type="text" id="credito-concepto" placeholder="Ej. MacBook Pro" />
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="credito-tarjeta">Tarjeta</label>
+          <select class="field-input" id="credito-tarjeta">
+            <option value="">Sin tarjeta</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="credito-categoria">Categoría</label>
+          <select class="field-input" id="credito-categoria">
+            <option>Supermercado</option>
+            <option>Restaurante</option>
+            <option>Transporte</option>
+            <option>Farmacia</option>
+            <option>Ropa</option>
+            <option selected>Electrónica</option>
+            <option>Hogar</option>
+            <option>Entretenimiento</option>
+            <option>Salud</option>
+            <option>Combustible</option>
+            <option>Otros</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="credito-total">Total</label>
+          <input class="field-input" type="number" id="credito-total" step="0.01" min="0" placeholder="0.00" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="credito-meses">Meses totales</label>
+          <input class="field-input" type="number" id="credito-meses" min="1" max="60" placeholder="12" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="credito-mensualidad">Mensualidad</label>
+          <input class="field-input" type="number" id="credito-mensualidad" step="0.01" min="0" placeholder="auto" />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field-group">
+          <label class="field-label" for="credito-fecha-inicio">Fecha inicio</label>
+          <input class="field-input" type="date" id="credito-fecha-inicio" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="credito-meses-pagados">Meses ya pagados</label>
+          <input class="field-input" type="number" id="credito-meses-pagados" min="0" value="0" />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeCreditoModal()">Cancelar</button>
+        <button type="submit" class="btn-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ─── CARD DRAWER ─── -->
+<div id="card-drawer-backdrop" class="drawer-backdrop" aria-hidden="true" onclick="closeCardDrawer()">
+  <aside id="card-drawer" class="card-drawer" role="complementary" onclick="event.stopPropagation()">
+    <div class="drawer-header">
+      <div class="drawer-header-info">
+        <span id="drawer-banco" class="drawer-banco"></span>
+        <span id="drawer-title" class="drawer-title"></span>
+      </div>
+      <button class="modal-close" onclick="closeCardDrawer()" aria-label="Cerrar">&times;</button>
+    </div>
+    <div id="drawer-body" class="drawer-body"></div>
+  </aside>
+</div>
+
+<!-- QR library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- Socket.IO client -->
+<script src="/socket.io/socket.io.js"></script>
+<!-- App logic -->
+<script src="/js/app.js"></script>
+<script src="/js/credits.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+services:
+  finanzas:
+    build: .
+    ports:
+      - "3001:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./auth_info_baileys:/app/auth_info_baileys
+      - ./public/uploads:/app/public/uploads
+    restart: unless-stopped
